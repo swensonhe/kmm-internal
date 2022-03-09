@@ -84,14 +84,14 @@ kotlin {
             publications {
                 create<MavenPublication>("release") {
                     groupId = "com.swensonhe"
-                    artifactId = "$libName-lib"
+                    artifactId = "strapi-kmm"
                     version = currentVersion
 
                     from(components.getByName("release"))
                 }
                 create<MavenPublication>("debug") {
                     groupId = "com.swensonhe"
-                    artifactId = "$libName-debug-lib"
+                    artifactId = "strapi-kmm-debug"
                     version = currentVersion
 
                     from(components.getByName("debug"))
