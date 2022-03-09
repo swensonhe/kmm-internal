@@ -84,14 +84,14 @@ kotlin {
             publications {
                 create<MavenPublication>("release") {
                     groupId = "com.swensonhe"
-                    artifactId = libName
+                    artifactId = "$libName-lib"
                     version = currentVersion
 
                     from(components.getByName("release"))
                 }
                 create<MavenPublication>("debug") {
                     groupId = "com.swensonhe"
-                    artifactId = "$libName-debug"
+                    artifactId = "$libName-debug-lib"
                     version = currentVersion
 
                     from(components.getByName("debug"))
