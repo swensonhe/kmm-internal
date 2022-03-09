@@ -10,7 +10,7 @@ plugins {
 }
 
 val currentVersion = "0.0.1"
-val libName = "StrapiKMM"
+val libName = "strapiKMM"
 
 version = currentVersion
 
@@ -84,14 +84,14 @@ kotlin {
             publications {
                 create<MavenPublication>("release") {
                     groupId = "com.swensonhe"
-                    artifactId = "strapi-kmm"
+                    artifactId = libName.toLowerCase()
                     version = currentVersion
 
                     from(components.getByName("release"))
                 }
                 create<MavenPublication>("debug") {
                     groupId = "com.swensonhe"
-                    artifactId = "strapi-kmm-debug"
+                    artifactId = "${libName.toLowerCase()}-debug"
                     version = currentVersion
 
                     from(components.getByName("debug"))
