@@ -1,46 +1,41 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+//import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     id(Plugins.androidLibrary)
     kotlin(KotlinPlugins.multiplatform)
     kotlin(KotlinPlugins.serialization) version Kotlin.version
-    id(SwiftPackage.swiftPackage) version SwiftPackage.swiftPackageVersion
-    id(Plugins.mavenPublish)
-    signing
 }
 
-val currentVersion = "0.0.1"
+val currentVersion = "0.0.5"
 val libName = "strapiKMM"
 
 version = currentVersion
 
 kotlin {
-    android()
+//    android {
+//        publishLibraryVariants("debug", "release")
+//        publishLibraryVariantsGroupedByFlavor = true
+//    }
 
-    val xcf = XCFramework(libName)
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework(libName) {
-            baseName = libName
-            xcf.add(this)
-        }
-    }
+//    val xcf = XCFramework(libName)
+//    listOf(
+//        iosX64(),
+//        iosArm64(),
+//        iosSimulatorArm64()
+//    ).forEach {
+//        it.binaries.framework(libName) {
+//            baseName = libName
+//            xcf.add(this)
+//        }
+//    }
 
-    android {
-        publishLibraryVariants("release", "debug")
-        publishLibraryVariantsGroupedByFlavor = true
-    }
-
-    multiplatformSwiftPackage {
-        packageName(libName)
-        swiftToolsVersion("5.5")
-        targetPlatforms {
-            iOS { v("13") }
-        }
-    }
+//    multiplatformSwiftPackage {
+//        packageName(libName)
+//        swiftToolsVersion("5.5")
+//        targetPlatforms {
+//            iOS { v("13") }
+//        }
+//    }
 
     sourceSets {
         val commonMain by getting {
@@ -50,13 +45,13 @@ kotlin {
                 api(Ktor.kotlinXSerialization)
                 api(Ktor.logback)
                 api(Ktor.logging)
-                implementation(Kotlin.kotlinxCoroutines) {
+                api(Kotlin.kotlinxCoroutines) {
                     version {
                         strictly(Kotlin.kotlinxCoroutinesVersion)
                     }
                 }
-                implementation(ProjectDependencies.firebaseGitLive)
-                implementation(ProjectDependencies.sharedPreferencesKVaultV)
+                api(ProjectDependencies.firebaseGitLive)
+                api(ProjectDependencies.sharedPreferencesKVaultV)
             }
         }
         val androidMain by getting {
@@ -75,27 +70,6 @@ kotlin {
 
             dependencies {
                 implementation(Ktor.ios)
-            }
-        }
-    }
-
-    afterEvaluate {
-        publishing {
-            publications {
-                create<MavenPublication>("release") {
-                    groupId = "com.swensonhe"
-                    artifactId = libName.toLowerCase()
-                    version = currentVersion
-
-                    from(components.getByName("release"))
-                }
-                create<MavenPublication>("debug") {
-                    groupId = "com.swensonhe"
-                    artifactId = "${libName.toLowerCase()}-debug"
-                    version = currentVersion
-
-                    from(components.getByName("debug"))
-                }
             }
         }
     }
