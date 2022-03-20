@@ -5,9 +5,9 @@ plugins {
     id(Plugins.androidLibrary)
     kotlin(KotlinPlugins.multiplatform)
     kotlin(KotlinPlugins.serialization) version Kotlin.version
-
+    kotlin(Plugins.cocoapods)
     id(Plugins.mavenPublish)
-    id(Plugins.Signing)
+    id(Plugins.signing)
 }
 
 val publishKey: String = gradleLocalProperties(rootDir).getProperty("publishKey")
@@ -19,7 +19,7 @@ val publishEmail: String = gradleLocalProperties(rootDir).getProperty("publishEm
 val publishRepository: String = gradleLocalProperties(rootDir).getProperty("publishRepository")
 val publishDeveloper: String = gradleLocalProperties(rootDir).getProperty("publishDeveloper")
 
-val currentVersion = "0.0.8"
+val currentVersion = "0.0.9"
 val libName = "strapiKMM"
 
 version = currentVersion
@@ -43,6 +43,12 @@ kotlin {
         }
     }
 
+    cocoapods {
+        framework {
+            export("io.github.kuuuurt:multiplatform-paging:0.4.7")
+        }
+    }
+
     metadata {
         compilations.matching { it.name == "iosMain" }.all {
             compileKotlinTaskProvider.configure { enabled = false }
@@ -57,18 +63,19 @@ kotlin {
                 api(Ktor.kotlinXSerialization)
                 api(Ktor.logback)
                 api(Ktor.logging)
-                implementation(Kotlin.kotlinxCoroutines) {
+                api(Kotlin.kotlinxCoroutines) {
                     version {
                         strictly(Kotlin.kotlinxCoroutinesVersion)
                     }
                 }
-                implementation(ProjectDependencies.firebaseGitLive)
-                implementation(ProjectDependencies.sharedPreferencesKVaultV)
+                api(ProjectDependencies.firebaseGitLive)
+                api(ProjectDependencies.sharedPreferencesKVaultV)
+                api(ProjectDependencies.paging)
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation(Ktor.android)
+                api(Ktor.android)
             }
         }
         val iosX64Main by getting
@@ -81,7 +88,7 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
 
             dependencies {
-                implementation(Ktor.ios)
+                api(Ktor.ios)
             }
         }
     }
@@ -134,7 +141,7 @@ android {
 
 
 group = publishGroupId
-version = "0.8"
+version = "0.9"
 
 afterEvaluate {
     project.publishing.publications.withType(MavenPublication::class.java).forEach {

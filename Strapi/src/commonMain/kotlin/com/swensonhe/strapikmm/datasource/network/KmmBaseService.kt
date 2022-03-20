@@ -24,7 +24,7 @@ open class KmmBaseService(private val baseUrl: String) {
             }
 
             if (body.isNotEmpty()) {
-                this.body = body.first()
+                this.body = body.first().value!!
             }
         }
     }

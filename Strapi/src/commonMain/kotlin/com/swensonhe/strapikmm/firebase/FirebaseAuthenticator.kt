@@ -1,7 +1,5 @@
 package com.swensonhe.strapikmm.firebase
 
-import com.swensonhe.strapikmm.util.CommonFlow
-import com.swensonhe.strapikmm.util.DataState
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.auth.AuthCredential
@@ -16,13 +14,17 @@ expect class FirebaseAuthenticator(
 ) {
     fun initialize(options: FirebaseOptions): FirebaseApp
 
-    fun signIn(email: String, password: String): CommonFlow<DataState<String>>
+    fun isTokenExist(): Boolean
 
-    fun signIn(authCredential: AuthCredential): CommonFlow<DataState<String>>
+    suspend fun signIn(email: String, password: String): String
 
-    fun signIn(token: String): CommonFlow<DataState<String>>
+    suspend fun signIn(authCredential: AuthCredential): String
 
-    fun signUp(email: String, password: String): CommonFlow<DataState<String>>
+    suspend fun signIn(token: String): String
 
-    fun signOut(): CommonFlow<DataState<Unit>>
+    suspend fun signIn(): String
+
+    suspend fun signUp(email: String, password: String): String
+
+    suspend fun signOut()
 }

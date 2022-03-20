@@ -1,0 +1,90 @@
+package com.swensonhe.strapikmm.firebase
+
+import com.swensonhe.strapikmm.constants.SharedConstants
+import com.swensonhe.strapikmm.datasource.network.services.strapi.StrapiService
+import com.swensonhe.strapikmm.errorhandling.executeCatching
+import com.swensonhe.strapikmm.model.AuthResponse
+import com.swensonhe.strapikmm.model.FirebaseAuthRequest
+import com.swensonhe.strapikmm.sharedpreference.KmmPreference
+import com.swensonhe.strapikmm.util.CommonFlow
+import com.swensonhe.strapikmm.util.DataState
+import com.swensonhe.strapikmm.util.asCommonFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.suspendCancellableCoroutine
+
+interface FirebaseAuthRepositoryInterface {
+    val strapiService: StrapiService
+    val firebaseAuthenticator: FirebaseAuthenticator
+    val sharedPreference: KmmPreference
+
+    fun <T> signIn(token: String): CommonFlow<DataState<T>> = flow {
+        executeCatching<T>({
+            emit(DataState.loading())
+            val firebaseToken = firebaseAuthenticator.signIn(token)
+            val response = getUserInformation<T>(firebaseToken)
+            sharedPreference.putString(SharedConstants.ACCESS_TOKEN, response.jwt.orEmpty())
+            emit(DataState.data<T>(data = response.user))
+        }, this)
+    }.asCommonFlow()
+
+    fun <T> signUp(email: String, password: String): CommonFlow<DataState<T>> = flow {
+        executeCatching<T>({
+            emit(DataState.loading())
+            val firebaseToken = firebaseAuthenticator.signUp(email, password)
+            val response = getUserInformation<T>(firebaseToken)
+            sharedPreference.putString(SharedConstants.ACCESS_TOKEN, response.jwt.orEmpty())
+            emit(DataState.data<T>(data = response.user))
+        }, this)
+    }.asCommonFlow()
+
+    fun signOut(): CommonFlow<DataState<Unit>> = flow {
+        executeCatching<Unit>({
+            emit(DataState.loading())
+            firebaseAuthenticator.signOut()
+            emit(DataState.data(data = Unit))
+        }, this)
+    }.asCommonFlow()
+
+    fun <T> signIn(): CommonFlow<DataState<T>> = flow {
+        executeCatching<T>({
+            emit(DataState.loading())
+            val firebaseToken = firebaseAuthenticator.signIn()
+            val response = getUserInformation<T>(firebaseToken)
+            sharedPreference.putString(SharedConstants.ACCESS_TOKEN, response.jwt.orEmpty())
+            emit(DataState.data<T>(data = response.user))
+        }, this)
+    }.asCommonFlow()
+
+    fun isTokenExist(): Boolean = firebaseAuthenticator.isTokenExist()
+
+    suspend fun <T> getUserInformation(token: String): AuthResponse<T> {
+        sharedPreference.clearValue(SharedConstants.ACCESS_TOKEN)
+        return suspendCancellableCoroutine { continuation ->
+            strapiService.post<AuthResponse<T>> {
+                endpoint("/firebase-auth")
+                body(FirebaseAuthRequest(token))
+            }.collectCommon {
+                it.data?.let {
+                    continuation.resumeWith(
+                        Result.success(it)
+                    )
+                }
+                it.error?.let {
+                    continuation.resumeWith(
+                        Result.failure(it)
+                    )
+                }
+            }
+        }
+    }
+
+    fun <T> signIn(email: String, password: String): CommonFlow<DataState<T>> = flow {
+        executeCatching<T>({
+            emit(DataState.loading())
+            val firebaseToken = firebaseAuthenticator.signIn(email, password)
+            val response = getUserInformation<T>(firebaseToken)
+            sharedPreference.putString(SharedConstants.ACCESS_TOKEN, response.jwt.orEmpty())
+            emit(DataState.data<T>(data = response.user))
+        }, this)
+    }.asCommonFlow()
+}

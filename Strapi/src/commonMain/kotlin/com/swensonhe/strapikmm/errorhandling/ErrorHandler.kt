@@ -11,7 +11,7 @@ suspend fun <T> executeCatching(block: suspend () -> Unit, flow: FlowCollector<D
     }
 }
 
-private suspend fun <T> handleError(throwable: Throwable, flow: FlowCollector<DataState<T>>) {
+suspend fun <T> handleError(throwable: Throwable, flow: FlowCollector<DataState<T>>) {
     val error = if (throwable is AppException) {
         throwable
     } else {
@@ -26,4 +26,21 @@ private suspend fun <T> handleError(throwable: Throwable, flow: FlowCollector<Da
             )
         )
     )
+}
+
+fun handleError(throwable: Throwable): AppException {
+    return if (throwable is AppException) {
+        throwable
+    } else {
+        NetworkErrorMapper().mapThrowable(throwable)
+    }
+}
+
+
+suspend fun <T> executeCatching(block: suspend () -> T): T {
+    try {
+        return block()
+    } catch (throwable: Throwable) {
+        throw handleError(throwable)
+    }
 }

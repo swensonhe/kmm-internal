@@ -1,9 +1,6 @@
 package com.swensonhe.strapikmm.firebase
 
 import com.swensonhe.strapikmm.errorhandling.executeCatching
-import com.swensonhe.strapikmm.util.CommonFlow
-import com.swensonhe.strapikmm.util.DataState
-import com.swensonhe.strapikmm.util.asCommonFlow
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.FirebaseOptions
@@ -11,7 +8,6 @@ import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.initialize
-import kotlinx.coroutines.flow.flow
 
 actual class FirebaseAuthenticator actual constructor(
     private val context: Any?,
@@ -28,53 +24,49 @@ actual class FirebaseAuthenticator actual constructor(
         return Firebase.initialize(context, options, "android")
     }
 
-    actual fun signIn(
+    actual suspend fun signIn(
         email: String,
         password: String
-    ): CommonFlow<DataState<String>> = flow {
-        executeCatching<String>({
-            emit(DataState.loading())
-            val user = firebaseAuth.signInWithEmailAndPassword(email, password).android
-            val token = user.user?.getIdToken(true)?.result?.token.orEmpty()
-            emit(DataState.data(data = token))
-        }, this)
-    }.asCommonFlow()
+    ): String {
+        return executeCatching {
+            val user = firebaseAuth.signInWithEmailAndPassword(email, password).user
+            user?.getIdToken(true).orEmpty()
+        }
+    }
 
-    actual fun signUp(
+    actual suspend fun signUp(
         email: String,
         password: String
-    ): CommonFlow<DataState<String>> = flow {
-        executeCatching<String>({
-            emit(DataState.loading())
-            val user = firebaseAuth.createUserWithEmailAndPassword(email, password).android
-            val token = user.user?.getIdToken(true)?.result?.token.orEmpty()
-            emit(DataState.data(data = token))
-        }, this)
-    }.asCommonFlow()
+    ): String {
+        return executeCatching {
+            val user = firebaseAuth.createUserWithEmailAndPassword(email, password).user
+            user?.getIdToken(true).orEmpty()
+        }
+    }
 
-    actual fun signOut(): CommonFlow<DataState<Unit>> = flow {
-        executeCatching<Unit>({
-            emit(DataState.loading())
-            firebaseAuth.signOut()
-            emit(DataState.data<Unit>(data = Unit))
-        }, this)
-    }.asCommonFlow()
+    actual suspend fun signOut() {
+        firebaseAuth.signOut()
+    }
 
-    actual fun signIn(authCredential: AuthCredential) = flow {
-        executeCatching<String>({
-            emit(DataState.loading())
-            val user = firebaseAuth.signInWithCredential(authCredential).android
-            val token = user.user?.getIdToken(true)?.result?.token.orEmpty()
-            emit(DataState.data(data = token))
-        }, this)
-    }.asCommonFlow()
+    actual suspend fun signIn(authCredential: AuthCredential): String {
+        return executeCatching {
+            val user = firebaseAuth.signInWithCredential(authCredential).user
+            user?.getIdToken(true).orEmpty()
+        }
+    }
 
-    actual fun signIn(token: String) = flow {
-        executeCatching<String>({
-            emit(DataState.loading())
-            val user = firebaseAuth.signInWithCustomToken(token).android
-            val firebaseToken = user.user?.getIdToken(true)?.result?.token.orEmpty()
-            emit(DataState.data(data = firebaseToken))
-        }, this)
-    }.asCommonFlow()
+    actual suspend fun signIn(token: String): String {
+        return executeCatching {
+            val user = firebaseAuth.signInWithCustomToken(token).user
+            user?.getIdToken(true).orEmpty()
+        }
+    }
+
+    actual fun isTokenExist(): Boolean = firebaseAuth.currentUser != null
+
+    actual suspend fun signIn(): String {
+        return executeCatching {
+            firebaseAuth.currentUser?.getIdToken(true).orEmpty()
+        }
+    }
 }

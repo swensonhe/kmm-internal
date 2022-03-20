@@ -1,5 +1,7 @@
 package com.swensonhe.strapikmm.datasource.network
 
+import io.ktor.http.*
+
 class StrapiRequestBuilder {
     private lateinit var requestEndpoint: String
     private val contents: MutableList<RequestContent> = mutableListOf()
@@ -21,6 +23,8 @@ class StrapiRequestBuilder {
         if(contents.any { it is RequestContent.Body<*> }) {
             throw IllegalStateException("You can pass only one body data inside the request")
         }
+
+        header(HttpHeaders.ContentType, "application/json")
         contents.add(RequestContent.Body(value))
     }
 
@@ -69,6 +73,9 @@ class StrapiQueryBuilder {
 
     fun populate(key: String) = apply {
         put("populate", key)
+    }
+    fun groupBy(key: String) = apply {
+        put("groupBy", key)
     }
 
     fun equalTo(field: String, value: String) = apply {

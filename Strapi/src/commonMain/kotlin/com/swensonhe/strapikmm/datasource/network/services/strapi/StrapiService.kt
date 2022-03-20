@@ -94,4 +94,3 @@ val jsonWithIgnoredUnknownKeys = Json {
 inline fun <reified T> JsonElement.convert(): T {
     return jsonWithIgnoredUnknownKeys.decodeFromString(this.toString())
 }
-
