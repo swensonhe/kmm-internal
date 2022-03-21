@@ -58,7 +58,6 @@ class StrapiService(
         }, this)
     }.asCommonFlow()
 
-
     inline fun <reified T> put(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
     ): CommonFlow<DataState<T>> = flow {

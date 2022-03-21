@@ -11,20 +11,20 @@ import com.swensonhe.strapikmm.util.asCommonFlow
 import dev.gitlive.firebase.auth.AuthCredential
 import kotlinx.coroutines.flow.flow
 
-class FirebaseAuthRepository(
+actual class FirebaseAuthRepository actual constructor(
     ktorClientFactory: KtorClientFactory,
     override val sharedPreference: KmmPreference,
     baseUrl: String,
     override val firebaseAuthenticator: FirebaseAuthenticator,
-) : FirebaseAuthRepositoryInterface {
+) : FirebaseAuthRepositoryInterface() {
     override val strapiService = StrapiService(ktorClientFactory.build(), baseUrl)
 
-    fun <T> signIn(authCredential: AuthCredential): CommonFlow<DataState<T>> =
+    actual inline fun <reified T> signIn(authCredential: Any): CommonFlow<DataState<T>> =
         flow {
             executeCatching<T>({
                 emit(DataState.loading())
-                val firebaseToken = firebaseAuthenticator.signIn(authCredential)
-                val response = getUserInformation<T>(firebaseToken)
+                val firebaseToken = firebaseAuthenticator.signIn(authCredential as AuthCredential)
+                val response = exchangeFirebaseToken<T>(firebaseToken)
                 sharedPreference.putString(
                     SharedConstants.AUTHORIZATION_HEADER,
                     response.jwt.orEmpty()

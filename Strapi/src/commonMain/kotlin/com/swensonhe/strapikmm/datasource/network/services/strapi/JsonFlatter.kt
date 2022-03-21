@@ -7,14 +7,13 @@ import kotlinx.serialization.json.*
 import kotlinx.serialization.serializer
 import kotlin.reflect.typeOf
 
-//TODO Handle descriptive errors while parsing
 object JsonFlatter {
 
     inline fun <reified T> flat(jsonElement: JsonElement): JsonElement {
         val descriptor = serializer(typeOf<T>()).descriptor
         val elementNames = descriptor.elementNames
 
-        return when(jsonElement) {
+        return when (jsonElement) {
             is JsonObject -> {
                 val map = mutableMapOf<String, JsonElement>()
                 elementNames.forEachIndexed { index, elementName ->
@@ -60,17 +59,19 @@ object JsonFlatter {
             var jsonElement: JsonElement? = null
             serializedNameComponents.forEachIndexed { index, serializedNameComponent ->
                 if (jsonElement == null) {
-                    jsonElement = jsonObject.get(serializedNameComponent) ?: JsonNull
+                    jsonElement = jsonObject[serializedNameComponent] ?: JsonNull
                 } else {
-                    if(jsonElement is JsonNull){
+                    if (jsonElement is JsonNull) {
                         return JsonNull
-                    } else if (index == serializedNameComponents.lastIndex) {
+                    } else if (jsonElement is JsonObject && index == serializedNameComponents.lastIndex) {
                         jsonElement =
                             jsonElement?.jsonObject?.get(serializedNameComponent) ?: JsonNull
                         return parse(jsonElement, descriptor)
-                    } else {
+                    } else if (jsonElement is JsonObject) {
                         jsonElement = jsonElement?.jsonObject?.get(serializedNameComponent)
                             ?: JsonNull
+                    } else {
+                        jsonElement ?: JsonNull
                     }
                 }
             }
@@ -106,8 +107,8 @@ object JsonFlatter {
     fun parse(
         jsonArray: JsonArray,
         descriptor: SerialDescriptor
-    ): JsonElement{
-        val data = jsonArray.mapIndexed{ index, jsonElement ->
+    ): JsonElement {
+        val data = jsonArray.mapIndexed { index, jsonElement ->
             val childDescriptor = descriptor.getElementDescriptor(index)
             parse(jsonElement, childDescriptor)
         }

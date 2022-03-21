@@ -19,7 +19,7 @@ val publishEmail: String = gradleLocalProperties(rootDir).getProperty("publishEm
 val publishRepository: String = gradleLocalProperties(rootDir).getProperty("publishRepository")
 val publishDeveloper: String = gradleLocalProperties(rootDir).getProperty("publishDeveloper")
 
-val currentVersion = "0.0.9"
+val currentVersion = "1.0.2"
 val libName = "strapiKMM"
 
 version = currentVersion
@@ -78,18 +78,19 @@ kotlin {
                 api(Ktor.android)
             }
         }
+
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
-
             dependencies {
                 api(Ktor.ios)
             }
+
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 
@@ -141,7 +142,7 @@ android {
 
 
 group = publishGroupId
-version = "0.9"
+version = currentVersion
 
 afterEvaluate {
     project.publishing.publications.withType(MavenPublication::class.java).forEach {
