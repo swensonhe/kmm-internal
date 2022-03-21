@@ -39,8 +39,12 @@ class StrapiService(
             val builder = StrapiRequestBuilder()
             builder.requestBuilder()
             val json = httpClient.post<JsonElement>(buildRequest(builder))
-            val data = JsonFlatter.flat<T>(json).convert<T>()
-            emit(DataState.data(data = data))
+            if (T::class.simpleName == Unit::class.simpleName) {
+                emit(DataState.data(data = Unit as T))
+            } else {
+                val data = JsonFlatter.flat<T>(json).convert<T>()
+                emit(DataState.data(data = data))
+            }
         }, this)
     }.asCommonFlow()
 
@@ -53,8 +57,12 @@ class StrapiService(
             val builder = StrapiRequestBuilder()
             builder.requestBuilder()
             val json = httpClient.patch<JsonElement>(buildRequest(builder))
-            val data = JsonFlatter.flat<T>(json).convert<T>()
-            emit(DataState.data(data = data))
+            if (T::class.simpleName == Unit::class.simpleName) {
+                emit(DataState.data(data = Unit as T))
+            } else {
+                val data = JsonFlatter.flat<T>(json).convert<T>()
+                emit(DataState.data(data = data))
+            }
         }, this)
     }.asCommonFlow()
 
@@ -66,8 +74,12 @@ class StrapiService(
             val builder = StrapiRequestBuilder()
             builder.requestBuilder()
             val json = httpClient.put<JsonElement>(buildRequest(builder))
-            val data = JsonFlatter.flat<T>(json).convert<T>()
-            emit(DataState.data(data = data))
+            if (T::class.simpleName == Unit::class.simpleName) {
+                emit(DataState.data(data = Unit as T))
+            } else {
+                val data = JsonFlatter.flat<T>(json).convert<T>()
+                emit(DataState.data(data = data))
+            }
         }, this)
     }.asCommonFlow()
 
@@ -80,14 +92,20 @@ class StrapiService(
             val builder = StrapiRequestBuilder()
             builder.requestBuilder()
             val json = httpClient.delete<JsonElement>(buildRequest(builder))
-            val data = JsonFlatter.flat<T>(json).convert<T>()
-            emit(DataState.data(data = data))
+            if (T::class.simpleName == Unit::class.simpleName) {
+                emit(DataState.data(data = Unit as T))
+            } else {
+                val data = JsonFlatter.flat<T>(json).convert<T>()
+                emit(DataState.data(data = data))
+            }
         }, this)
     }.asCommonFlow()
 }
 
 val jsonWithIgnoredUnknownKeys = Json {
     ignoreUnknownKeys = true
+    useAlternativeNames = false
+    encodeDefaults = false
 }
 
 inline fun <reified T> JsonElement.convert(): T {
