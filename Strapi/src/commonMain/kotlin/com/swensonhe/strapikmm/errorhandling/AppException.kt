@@ -5,4 +5,4 @@ open class AppException(
     val errorMessage: String,
     val errorBody: String? = null,
     val throwable: Throwable? = null
-) : Throwable()
+) : Throwable(errorMessage)
