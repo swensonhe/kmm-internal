@@ -2,6 +2,7 @@ package com.swensonhe.strapikmm.firebase
 
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.FirebaseOptions
+import dev.gitlive.firebase.auth.ActionCodeSettings
 import dev.gitlive.firebase.auth.AuthCredential
 
 /**
@@ -17,6 +18,10 @@ expect class FirebaseAuthenticator(
     fun isTokenExist(): Boolean
 
     suspend fun signIn(email: String, password: String): String
+
+    suspend fun sendSignInLinkToEmail(email: String, settings: ActionCodeSettings)
+
+    suspend fun signInWithEmailLink(email: String, link: String): String
 
     suspend fun signIn(authCredential: AuthCredential): String
 

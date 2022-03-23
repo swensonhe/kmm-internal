@@ -10,6 +10,7 @@ import com.swensonhe.strapikmm.sharedpreference.KmmPreference
 import com.swensonhe.strapikmm.util.CommonFlow
 import com.swensonhe.strapikmm.util.DataState
 import com.swensonhe.strapikmm.util.asCommonFlow
+import dev.gitlive.firebase.auth.ActionCodeSettings
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 
@@ -43,6 +44,17 @@ abstract class FirebaseAuthRepositoryInterface {
         executeCatching<Unit>({
             emit(DataState.loading())
             firebaseAuthenticator.signOut()
+            emit(DataState.data(data = Unit))
+        }, this)
+    }.asCommonFlow()
+
+    fun sendSignInLinkToEmail(
+        email: String,
+        settings: ActionCodeSettings
+    ): CommonFlow<DataState<Unit>> = flow {
+        executeCatching<Unit>({
+            emit(DataState.loading())
+            firebaseAuthenticator.sendSignInLinkToEmail(email, settings)
             emit(DataState.data(data = Unit))
         }, this)
     }.asCommonFlow()
@@ -85,6 +97,20 @@ abstract class FirebaseAuthRepositoryInterface {
             executeCatching<T>({
                 emit(DataState.loading())
                 val firebaseToken = firebaseAuthenticator.signIn(email, password)
+                val response = exchangeFirebaseToken<T>(firebaseToken)
+                sharedPreference.putString(SharedConstants.ACCESS_TOKEN, response.jwt.orEmpty())
+                emit(DataState.data<T>(data = response.user))
+            }, this)
+        }.asCommonFlow()
+
+    inline fun <reified T> signInWithEmailLink(
+        email: String,
+        link: String
+    ): CommonFlow<DataState<T>> =
+        flow {
+            executeCatching<T>({
+                emit(DataState.loading())
+                val firebaseToken = firebaseAuthenticator.signInWithEmailLink(email, link)
                 val response = exchangeFirebaseToken<T>(firebaseToken)
                 sharedPreference.putString(SharedConstants.ACCESS_TOKEN, response.jwt.orEmpty())
                 emit(DataState.data<T>(data = response.user))

@@ -19,7 +19,7 @@ val publishEmail: String = gradleLocalProperties(rootDir).getProperty("publishEm
 val publishRepository: String = gradleLocalProperties(rootDir).getProperty("publishRepository")
 val publishDeveloper: String = gradleLocalProperties(rootDir).getProperty("publishDeveloper")
 
-val currentVersion = "1.0.8"
+val currentVersion = "1.0.13"
 val libName = "strapiKMM"
 
 version = currentVersion
@@ -28,7 +28,7 @@ kotlin {
 
     android {
         publishLibraryVariants("debug", "release")
-        publishLibraryVariantsGroupedByFlavor = true
+//        publishLibraryVariantsGroupedByFlavor = true
     }
 
     val xcf = XCFramework(libName)
@@ -94,6 +94,12 @@ kotlin {
         }
     }
 
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
+    }
+
     afterEvaluate {
         publishing {
             publications {
@@ -127,16 +133,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-        getByName("debug") {
-            isMinifyEnabled = false
-        }
     }
 }
 

@@ -80,73 +80,73 @@ class StrapiQueryBuilder {
 
     fun equalTo(field: String, value: String) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
-        put("filters${filterQuery}[\$eq]", value)
+        put("filters[${filterQuery}][\$eq]", value)
     }
 
     fun notEqualTo(field: String, value: String) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
-        put("filters${filterQuery}[\$ne]", value)
+        put("filters[${filterQuery}][\$ne]", value)
     }
 
     fun lessThan(field: String, value: String) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
-        put("filters${filterQuery}[\$lt]", value)
+        put("filters[${filterQuery}][\$lt]", value)
     }
 
     fun greaterThan(field: String, value: String) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
-        put("filters${filterQuery}[\$gt]", value)
+        put("filters[${filterQuery}][\$gt]", value)
     }
 
     fun lessThanOrEqual(field: String, value: String) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
-        put("filters${filterQuery}[\$lte]", value)
+        put("filters[${filterQuery}][\$lte]", value)
     }
 
     fun greaterThanOrEqual(field: String, value: String) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
-        put("filters${filterQuery}[\$gte]", value)
+        put("filters[${filterQuery}][\$gte]", value)
     }
 
     fun includedIn(field: String, value: List<String>) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
         value.forEach {
-            put("filters${filterQuery}[\$in]", it)
+            put("filters[${filterQuery}][\$in]", it)
         }
     }
 
     fun noIncludedIn(field: String, value: List<String>) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
         value.forEach {
-            put("filters${filterQuery}[\$nin]", it)
+            put("filters[${filterQuery}][\$nin]", it)
         }
     }
 
     fun contains(field: String, value: List<String>) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
         value.forEach {
-            put("filters${filterQuery}[\$contains]", it)
+            put("filters[${filterQuery}][\$contains]", it)
         }
     }
 
     fun notContains(field: String, value: List<String>) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
         value.forEach {
-            put("filters${filterQuery}[\$ncontain]", it)
+            put("filters[${filterQuery}][\$ncontain]", it)
         }
     }
 
     fun containsCaseSensitive(field: String, value: List<String>) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
         value.forEach {
-            put("filters${filterQuery}[\$containss]", it)
+            put("filters[${filterQuery}][\$containss]", it)
         }
     }
 
     fun notContainsCaseSensitive(field: String, value: List<String>) = apply {
         val filterQuery = field.split(".").map { "[$it]" }
         value.forEach {
-            put("filters${filterQuery}[\$ncontainss]", it)
+            put("filters[${filterQuery}][\$ncontainss]", it)
         }
     }
 

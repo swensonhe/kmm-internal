@@ -4,6 +4,7 @@ import com.swensonhe.strapikmm.errorhandling.executeCatching
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.FirebaseOptions
+import dev.gitlive.firebase.auth.ActionCodeSettings
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth
@@ -68,5 +69,19 @@ actual class FirebaseAuthenticator actual constructor(
         return executeCatching {
             firebaseAuth.currentUser?.getIdToken(true).orEmpty()
         }
+    }
+
+    actual suspend fun signInWithEmailLink(
+        email: String,
+        link: String
+    ): String {
+        return executeCatching {
+            val user = firebaseAuth.signInWithEmailLink(email, link)
+            user.user?.getIdToken(true).orEmpty()
+        }
+    }
+
+    actual suspend fun sendSignInLinkToEmail(email: String, settings: ActionCodeSettings) {
+        firebaseAuth.sendSignInLinkToEmail(email, settings)
     }
 }
