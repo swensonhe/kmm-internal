@@ -20,7 +20,7 @@ class StrapiRequestBuilder {
     }
 
     fun <T> body(value: T) = apply {
-        if(contents.any { it is RequestContent.Body<*> }) {
+        if (contents.any { it is RequestContent.Body<*> }) {
             throw IllegalStateException("You can pass only one body data inside the request")
         }
 
@@ -74,18 +74,21 @@ class StrapiQueryBuilder {
     fun populate(key: String) = apply {
         put("populate", key)
     }
+
     fun groupBy(key: String) = apply {
         put("groupBy", key)
     }
 
     fun equalTo(field: String, value: String) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        put("filters[${filterQuery}][\$eq]", value)
+        field.split(".").map { "[$it]" }.forEach {
+            put("filters${it}[\$eq]", value)
+        }
     }
 
     fun notEqualTo(field: String, value: String) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        put("filters[${filterQuery}][\$ne]", value)
+        field.split(".").map { "[$it]" }.forEach {
+            put("filters${it}[\$ne]", value)
+        }
     }
 
     fun lessThan(field: String, value: String) = apply {
@@ -94,59 +97,68 @@ class StrapiQueryBuilder {
     }
 
     fun greaterThan(field: String, value: String) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        put("filters[${filterQuery}][\$gt]", value)
+        field.split(".").map { "[$it]" }.forEach {
+            put("filters${it}[\$gt]", value)
+        }
     }
 
     fun lessThanOrEqual(field: String, value: String) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        put("filters[${filterQuery}][\$lte]", value)
+        field.split(".").map { "[$it]" }.forEach {
+            put("filters${it}[\$lte]", value)
+        }
     }
 
     fun greaterThanOrEqual(field: String, value: String) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        put("filters[${filterQuery}][\$gte]", value)
+        field.split(".").map { "[$it]" }.forEach {
+            put("filters${it}[\$gte]", value)
+        }
     }
 
     fun includedIn(field: String, value: List<String>) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        value.forEach {
-            put("filters[${filterQuery}][\$in]", it)
+        field.split(".").map { "[$it]" }.forEach {
+            value.forEach {
+                put("filters${it}[\$in]", it)
+            }
         }
     }
 
     fun noIncludedIn(field: String, value: List<String>) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        value.forEach {
-            put("filters[${filterQuery}][\$nin]", it)
+        field.split(".").map { "[$it]" }.forEach {
+            value.forEach {
+                put("filters${it}[\$nin]", it)
+            }
         }
     }
 
     fun contains(field: String, value: List<String>) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        value.forEach {
-            put("filters[${filterQuery}][\$contains]", it)
+        field.split(".").map { "[$it]" }.forEach {
+            value.forEach {
+                put("filters${it}[\$contains]", it)
+            }
         }
     }
 
     fun notContains(field: String, value: List<String>) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        value.forEach {
-            put("filters[${filterQuery}][\$ncontain]", it)
+        field.split(".").map { "[$it]" }.forEach {
+            value.forEach {
+                put("filters${it}[\$ncontain]", it)
+            }
         }
     }
 
     fun containsCaseSensitive(field: String, value: List<String>) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        value.forEach {
-            put("filters[${filterQuery}][\$containss]", it)
+        field.split(".").map { "[$it]" }.forEach {
+            value.forEach {
+                put("filters${it}[\$containss]", it)
+            }
         }
     }
 
     fun notContainsCaseSensitive(field: String, value: List<String>) = apply {
-        val filterQuery = field.split(".").map { "[$it]" }
-        value.forEach {
-            put("filters[${filterQuery}][\$ncontainss]", it)
+        field.split(".").map { "[$it]" }.forEach {
+            value.forEach {
+                put("filters${it}[\$ncontainss]", it)
+            }
         }
     }
 
