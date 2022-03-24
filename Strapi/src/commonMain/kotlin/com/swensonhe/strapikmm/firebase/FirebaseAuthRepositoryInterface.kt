@@ -44,6 +44,7 @@ abstract class FirebaseAuthRepositoryInterface {
         executeCatching<Unit>({
             emit(DataState.loading())
             firebaseAuthenticator.signOut()
+            sharedPreference.clearValue(SharedConstants.ACCESS_TOKEN)
             emit(DataState.data(data = Unit))
         }, this)
     }.asCommonFlow()
@@ -72,6 +73,7 @@ abstract class FirebaseAuthRepositoryInterface {
     fun isTokenExist(): Boolean = firebaseAuthenticator.isTokenExist()
 
     suspend inline fun <reified T> exchangeFirebaseToken(token: String): AuthResponse<T> {
+        sharedPreference.clear()
         sharedPreference.clearValue(SharedConstants.ACCESS_TOKEN)
         return suspendCancellableCoroutine { continuation ->
             strapiService.post<AuthResponse<T>> {

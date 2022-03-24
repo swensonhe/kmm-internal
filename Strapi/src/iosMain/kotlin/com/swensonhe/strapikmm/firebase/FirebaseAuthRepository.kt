@@ -26,7 +26,7 @@ actual class FirebaseAuthRepository actual constructor(
                 val firebaseToken = firebaseAuthenticator.signIn(authCredential as AuthCredential)
                 val response = exchangeFirebaseToken<T>(firebaseToken)
                 sharedPreference.putString(
-                    SharedConstants.AUTHORIZATION_HEADER,
+                    SharedConstants.ACCESS_TOKEN,
                     response.jwt.orEmpty()
                 )
                 emit(DataState.data<T>(data = response.user))
