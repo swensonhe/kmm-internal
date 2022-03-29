@@ -27,7 +27,7 @@ open class KmmBaseService(private val baseUrl: String) {
 
             if (body.isNotEmpty()) {
                 bodyString = try {
-                    Json.encodeToString(body.first().value!!)
+                     body.first().jsonString
                 } catch (throwable: Throwable) {
                     "unable to obtain body data"
                 }

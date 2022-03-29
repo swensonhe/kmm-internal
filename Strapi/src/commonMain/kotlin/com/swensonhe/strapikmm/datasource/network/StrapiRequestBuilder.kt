@@ -1,10 +1,12 @@
 package com.swensonhe.strapikmm.datasource.network
 
 import io.ktor.http.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class StrapiRequestBuilder {
     private lateinit var requestEndpoint: String
-    private val contents: MutableList<RequestContent> = mutableListOf()
+    val contents: MutableList<RequestContent> = mutableListOf()
     private var queryBuilder: StrapiQueryBuilder? = null
 
     fun endpoint(endpoint: String) {
@@ -19,13 +21,14 @@ class StrapiRequestBuilder {
         contents.add(RequestContent.Path(key, value))
     }
 
-    fun <T> body(value: T) = apply {
-        if (contents.any { it is RequestContent.Body<*> }) {
+    inline fun <reified T> body(value: T) = apply {
+        if (this.contents.any { it is RequestContent.Body<*> }) {
             throw IllegalStateException("You can pass only one body data inside the request")
         }
 
         header(HttpHeaders.ContentType, "application/json")
-        contents.add(RequestContent.Body(value))
+        val json = Json.encodeToString(value)
+        this.contents.add(RequestContent.Body(value, json))
     }
 
     fun header(key: String, value: String) = apply {
@@ -196,7 +199,7 @@ sealed class RequestContent {
     class Query(val key: String, val value: String) : RequestContent()
     class Path(val key: String, val value: String) : RequestContent()
     class Header(val key: String, val value: String) : RequestContent()
-    class Body<T>(val value: T) : RequestContent()
+    class Body<T>(val value: T, val jsonString: String) : RequestContent()
 }
 
 fun StrapiQueryBuilder.extractQueries(): List<RequestContent.Query> {
