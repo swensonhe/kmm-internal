@@ -1,12 +1,11 @@
 package com.swensonhe.strapikmm.datasource.network
 
 import io.ktor.client.request.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 open class KmmBaseService(private val baseUrl: String) {
     fun buildRequest(
         requestBuilder: StrapiRequestBuilder,
+        method: String
     ): HttpRequestBuilder {
         val builderData = requestBuilder.build()
         val urlSuffix = builderData.first
@@ -35,7 +34,7 @@ open class KmmBaseService(private val baseUrl: String) {
             }
         }
 
-        builder.printCURLDescription(bodyString)
+        builder.printCURLDescription(bodyString, method)
         return builder
     }
 }

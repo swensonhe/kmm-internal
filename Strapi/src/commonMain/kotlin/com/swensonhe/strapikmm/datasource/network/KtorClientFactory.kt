@@ -23,15 +23,14 @@ expect class KtorClientFactory(context: Any) {
     fun build(): HttpClient
 }
 
-fun HttpRequestBuilder.printCURLDescription(bodyString: String? = null) {
+fun HttpRequestBuilder.printCURLDescription(bodyString: String? = null, method: String) {
     val url = url
     val urlBuilder = url.buildString()
-    val method = method
-    Logger("").log("================================================\n")
+    Logger("").log("================================================")
 
     val components = mutableListOf<String>()
     components.add("$ curl -v")
-    components.add("-X ${method.value}")
+    components.add("-X $method")
 
     val headers = headers.entries()
 
@@ -48,5 +47,5 @@ fun HttpRequestBuilder.printCURLDescription(bodyString: String? = null) {
 
     val message = components.joinToString(" \\\n\t")
     Logger("").log(message)
-    Logger("").log("================================================\n")
+    Logger("").log("================================================")
 }
