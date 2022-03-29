@@ -9,3 +9,8 @@ expect class Logger(
 fun printLogD(className: String?, message: String ) {
     println("$className: $message")
 }
+
+fun printLogD(message: String ) {
+    println(message)
+}
+

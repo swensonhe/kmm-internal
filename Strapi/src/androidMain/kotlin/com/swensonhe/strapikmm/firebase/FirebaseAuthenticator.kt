@@ -30,6 +30,7 @@ actual class FirebaseAuthenticator actual constructor(
         password: String
     ): String {
         return executeCatching {
+
             val user = firebaseAuth.signInWithEmailAndPassword(email, password).user
             user?.getIdToken(true).orEmpty()
         }

@@ -8,7 +8,7 @@ class NetworkErrorMapper {
     fun mapThrowable(throwable: Throwable): AppException {
         return UnexpectedException(
             code = UNEXPECTED,
-            message = throwable.message ?: "The application has encountered an unknown error",
+            message = "$throwable",
             throwable = throwable
         )
     }

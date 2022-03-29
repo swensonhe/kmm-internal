@@ -8,8 +8,12 @@ actual class Logger actual constructor(
         if(!BuildConfig().isDebug()){
             // Crashlytics or whatever
         }
-        else{
-            println("$className: $msg")
+        else {
+            if (className.isEmpty()) {
+                println(msg)
+            } else {
+                println("$className: $msg")
+            }
         }
     }
 }

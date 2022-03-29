@@ -9,7 +9,11 @@ actual class Logger actual constructor(
             // production logging - Crashlytics or something else
         }
         else{
-            printLogD(className, msg)
+            if (className.isEmpty()) {
+                printLogD(msg)
+            } else {
+                printLogD("$className: $msg")
+            }
         }
     }
 }
