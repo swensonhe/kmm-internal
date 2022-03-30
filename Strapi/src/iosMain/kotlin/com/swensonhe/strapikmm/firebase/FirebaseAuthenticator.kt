@@ -4,10 +4,7 @@ import com.swensonhe.strapikmm.errorhandling.executeCatching
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseApp
 import dev.gitlive.firebase.FirebaseOptions
-import dev.gitlive.firebase.auth.ActionCodeSettings
-import dev.gitlive.firebase.auth.AuthCredential
-import dev.gitlive.firebase.auth.FirebaseAuth
-import dev.gitlive.firebase.auth.auth
+import dev.gitlive.firebase.auth.*
 import dev.gitlive.firebase.initialize
 
 actual class FirebaseAuthenticator actual constructor(
@@ -44,6 +41,17 @@ actual class FirebaseAuthenticator actual constructor(
         return executeCatching {
             val user = firebaseAuth.createUserWithEmailAndPassword(email, password)
             user.user?.getIdToken(true).orEmpty()
+        }
+    }
+
+    actual suspend fun signInWithPhone(
+        verificationId: String,
+        smsCode: String
+    ): String {
+        return executeCatching {
+            val credential = PhoneAuthProvider(firebaseAuth).credential(verificationId, smsCode)
+            val user = firebaseAuth.signInWithCredential(credential).user
+            user?.getIdToken(true).orEmpty()
         }
     }
 

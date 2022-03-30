@@ -19,6 +19,8 @@ expect class FirebaseAuthenticator(
 
     suspend fun signIn(email: String, password: String): String
 
+    suspend fun signInWithPhone(verificationId: String, smsCode: String): String
+
     suspend fun sendSignInLinkToEmail(email: String, settings: ActionCodeSettings)
 
     suspend fun signInWithEmailLink(email: String, link: String): String
