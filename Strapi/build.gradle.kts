@@ -19,7 +19,7 @@ val publishEmail: String = gradleLocalProperties(rootDir).getProperty("publishEm
 val publishRepository: String = gradleLocalProperties(rootDir).getProperty("publishRepository")
 val publishDeveloper: String = gradleLocalProperties(rootDir).getProperty("publishDeveloper")
 
-val currentVersion = "1.0.23"
+val currentVersion = "1.0.25"
 val libName = "strapiKMM"
 
 version = currentVersion
@@ -68,7 +68,6 @@ kotlin {
                         strictly(Kotlin.kotlinxCoroutinesVersion)
                     }
                 }
-                api(ProjectDependencies.firebaseGitLive)
                 api(ProjectDependencies.sharedPreferencesKVaultV)
                 api(ProjectDependencies.paging)
             }
