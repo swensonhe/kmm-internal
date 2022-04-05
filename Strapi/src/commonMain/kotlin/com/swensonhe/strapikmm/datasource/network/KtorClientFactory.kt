@@ -42,17 +42,17 @@ fun HttpRequestBuilder.printCURLDescription(
 
     headers.forEach { entry ->
         entry.value.forEach { value ->
-            components.add("-H ${entry.key}: ${value.replace("\"", "\\\"")}")
+            components.add("-H \"${entry.key}: ${value.replace("\"", "\\\"")}\"")
         }
     }
 
     val token = kmmPreference.getString(SharedConstants.ACCESS_TOKEN)
     if (token.isNullOrEmpty().not()) {
-        components.add("-H Authorization: Bearer ${token!!.replace("\"", "\\\"")}")
+        components.add("-H \"Authorization: Bearer ${token!!.replace("\"", "\\\"")}\"")
     }
 
     if (bodyString != null) {
-        components.add("-d ${bodyString.replace("\\\"", "\\\\\"").replace("\"", "\\\"")}")
+        components.add("-d \"${bodyString.replace("\\\"", "\\\\\"").replace("\"", "\\\"")}\"")
     }
     components.add("\"$urlBuilder\"")
 
