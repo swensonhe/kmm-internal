@@ -3,6 +3,7 @@ package com.swensonhe.strapikmm.datasource.network.services.strapi
 import com.swensonhe.strapikmm.datasource.network.KmmBaseService
 import com.swensonhe.strapikmm.datasource.network.StrapiRequestBuilder
 import com.swensonhe.strapikmm.errorhandling.executeCatching
+import com.swensonhe.strapikmm.sharedpreference.KmmPreference
 import com.swensonhe.strapikmm.util.CommonFlow
 import com.swensonhe.strapikmm.util.DataState
 import com.swensonhe.strapikmm.util.asCommonFlow
@@ -17,7 +18,8 @@ import kotlinx.serialization.json.JsonElement
 class StrapiService(
     val httpClient: HttpClient,
     baseUrl: String,
-) : KmmBaseService(baseUrl) {
+    kmmPreference: KmmPreference
+) : KmmBaseService(baseUrl, kmmPreference) {
 
     inline fun <reified T> get(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},

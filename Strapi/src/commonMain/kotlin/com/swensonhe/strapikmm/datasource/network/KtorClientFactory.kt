@@ -1,5 +1,7 @@
 package com.swensonhe.strapikmm.datasource.network
 
+import com.swensonhe.strapikmm.constants.SharedConstants
+import com.swensonhe.strapikmm.sharedpreference.KmmPreference
 import com.swensonhe.strapikmm.util.Logger
 import io.ktor.client.*
 import io.ktor.client.features.logging.*
@@ -23,7 +25,11 @@ expect class KtorClientFactory(context: Any) {
     fun build(): HttpClient
 }
 
-fun HttpRequestBuilder.printCURLDescription(bodyString: String? = null, method: String) {
+fun HttpRequestBuilder.printCURLDescription(
+    bodyString: String? = null,
+    method: String,
+    kmmPreference: KmmPreference
+) {
     val url = url
     val urlBuilder = url.buildString()
     Logger("").log("================================================")
@@ -38,6 +44,11 @@ fun HttpRequestBuilder.printCURLDescription(bodyString: String? = null, method: 
         entry.value.forEach { value ->
             components.add("-H ${entry.key}: ${value.replace("\"", "\\\"")}")
         }
+    }
+
+    val token = kmmPreference.getString(SharedConstants.ACCESS_TOKEN)
+    if (token.isNullOrEmpty().not()) {
+        components.add("-H Authorization: Bearer ${token!!.replace("\"", "\\\"")}")
     }
 
     if (bodyString != null) {

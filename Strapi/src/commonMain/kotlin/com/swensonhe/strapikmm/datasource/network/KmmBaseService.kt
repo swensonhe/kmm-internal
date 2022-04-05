@@ -1,11 +1,12 @@
 package com.swensonhe.strapikmm.datasource.network
 
+import com.swensonhe.strapikmm.sharedpreference.KmmPreference
 import io.ktor.client.request.*
 
-open class KmmBaseService(private val baseUrl: String) {
+open class KmmBaseService(private val baseUrl: String, private val kmmPreference: KmmPreference) {
     fun buildRequest(
         requestBuilder: StrapiRequestBuilder,
-        method: String
+        method: String,
     ): HttpRequestBuilder {
         val builderData = requestBuilder.build()
         val urlSuffix = builderData.first
@@ -34,7 +35,7 @@ open class KmmBaseService(private val baseUrl: String) {
             }
         }
 
-        builder.printCURLDescription(bodyString, method)
+        builder.printCURLDescription(bodyString, method, kmmPreference)
         return builder
     }
 }
