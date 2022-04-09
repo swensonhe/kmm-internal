@@ -21,6 +21,16 @@ class StrapiService(
     kmmPreference: KmmPreference
 ) : KmmBaseService(baseUrl, kmmPreference) {
 
+    @Throws(Throwable::class)
+    suspend inline fun <reified T> getOne(
+        crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
+    ): T {
+        val builder = StrapiRequestBuilder()
+        builder.requestBuilder()
+        val json = httpClient.get<JsonElement>(buildRequest(builder, HttpMethod.Get.value))
+        return JsonFlatter.flat<T>(json).convert<T>()
+    }
+
     inline fun <reified T> get(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
     ): CommonFlow<DataState<T>> = flow {
