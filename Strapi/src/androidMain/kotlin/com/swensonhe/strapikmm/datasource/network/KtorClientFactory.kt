@@ -4,24 +4,14 @@ import android.content.Context
 import com.liftric.kvault.KVault
 import com.swensonhe.strapikmm.constants.SharedConstants
 import com.swensonhe.strapikmm.datasource.network.services.strapi.JsonFlatter
-import com.swensonhe.strapikmm.datasource.network.services.strapi.convert
 import com.swensonhe.strapikmm.errorhandling.NetworkError
 import com.swensonhe.strapikmm.errorhandling.NetworkErrorMapper
-import com.swensonhe.strapikmm.util.KmmContext
 import com.swensonhe.strapikmm.sharedpreference.KmmPreference
-import com.swensonhe.strapikmm.util.Logger
-import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
-import io.ktor.client.engine.android.Android
-import io.ktor.client.features.*
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.Logging
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import kotlinx.serialization.decodeFromString
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.plugins.*
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
 actual class KtorClientFactory actual constructor(context: Any) {
@@ -34,13 +24,7 @@ actual class KtorClientFactory actual constructor(context: Any) {
             useAlternativeNames = false
         }
 
-        val kotlinSerializer = KotlinxSerializer(jsonSerializer)
-
         return HttpClient(Android) {
-
-            install(JsonFeature) {
-                serializer = kotlinSerializer
-            }
 
             install(DefaultRequest) {
                 val token = preference.getString(SharedConstants.ACCESS_TOKEN)
@@ -57,10 +41,9 @@ actual class KtorClientFactory actual constructor(context: Any) {
                     val responseException =
                         cause as? ResponseException ?: return@handleResponseException
                     val response = responseException.response
-                    val bytes = response.receive<ByteArray>()
-                    val string = bytes.decodeToString()
+                    val bytes = response.body<JsonElement>()
                     val errorData =
-                        JsonFlatter.flat<NetworkError>(jsonSerializer.decodeFromString(string))
+                        JsonFlatter.flat<NetworkError>(jsonSerializer.decodeFromJsonElement(bytes))
                     val errorResponse =
                         jsonSerializer.decodeFromJsonElement<NetworkError>(errorData)
                     val error = NetworkErrorMapper().mapServerError(
