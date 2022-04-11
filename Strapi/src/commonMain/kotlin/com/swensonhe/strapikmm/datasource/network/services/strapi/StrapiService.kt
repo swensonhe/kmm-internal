@@ -2,15 +2,11 @@ package com.swensonhe.strapikmm.datasource.network.services.strapi
 
 import com.swensonhe.strapikmm.datasource.network.KmmBaseService
 import com.swensonhe.strapikmm.datasource.network.StrapiRequestBuilder
-import com.swensonhe.strapikmm.errorhandling.executeCatching
 import com.swensonhe.strapikmm.sharedpreference.KmmPreference
-import com.swensonhe.strapikmm.util.CommonFlow
-import com.swensonhe.strapikmm.util.DataState
-import com.swensonhe.strapikmm.util.asCommonFlow
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -21,88 +17,73 @@ class StrapiService(
     kmmPreference: KmmPreference
 ) : KmmBaseService(baseUrl, kmmPreference) {
 
-    inline fun <reified T> get(
+    @Throws(Throwable::class)
+    suspend inline fun <reified T> get(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
-    ): CommonFlow<DataState<T>> = flow {
-        executeCatching<T>({
-            emit(DataState.loading())
-            val builder = StrapiRequestBuilder()
-            builder.requestBuilder()
-            val json = httpClient.get<JsonElement>(buildRequest(builder, HttpMethod.Get.value))
-            val data = JsonFlatter.flat<T>(json).convert<T>()
-            emit(DataState.data(data = data))
-        }, this)
-    }.asCommonFlow()
+    ): T {
+        val builder = StrapiRequestBuilder()
+        builder.requestBuilder()
+        val json = httpClient.get(
+            buildRequest(builder, HttpMethod.Get.value)
+        ).body<JsonElement>()
+        return JsonFlatter.flat<T>(json).convert<T>()
+    }
 
-    inline fun <reified T> post(
+    suspend inline fun <reified T> post(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
-    ): CommonFlow<DataState<T>> = flow {
-        executeCatching<T>({
-            emit(DataState.loading())
-            val builder = StrapiRequestBuilder()
-            builder.requestBuilder()
-            val json = httpClient.post<JsonElement>(buildRequest(builder, HttpMethod.Post.value))
-            if (T::class.simpleName == Unit::class.simpleName) {
-                emit(DataState.data(data = Unit as T))
-            } else {
-                val data = JsonFlatter.flat<T>(json).convert<T>()
-                emit(DataState.data(data = data))
-            }
-        }, this)
-    }.asCommonFlow()
+    ): T {
+        val builder = StrapiRequestBuilder()
+        builder.requestBuilder()
+        val json =
+            httpClient.post(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+        return if (T::class.simpleName == Unit::class.simpleName) {
+            Unit as T
+        } else {
+            JsonFlatter.flat<T>(json).convert()
+        }
+    }
 
-
-    inline fun <reified T> patch(
+    suspend inline fun <reified T> patch(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
-    ): CommonFlow<DataState<T>> = flow {
-        executeCatching<T>({
-            emit(DataState.loading())
-            val builder = StrapiRequestBuilder()
-            builder.requestBuilder()
-            val json = httpClient.patch<JsonElement>(buildRequest(builder, HttpMethod.Patch.value))
-            if (T::class.simpleName == Unit::class.simpleName) {
-                emit(DataState.data(data = Unit as T))
-            } else {
-                val data = JsonFlatter.flat<T>(json).convert<T>()
-                emit(DataState.data(data = data))
-            }
-        }, this)
-    }.asCommonFlow()
+    ): T {
+        val builder = StrapiRequestBuilder()
+        builder.requestBuilder()
+        val json =
+            httpClient.patch(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+        return if (T::class.simpleName == Unit::class.simpleName) {
+            Unit as T
+        } else {
+            JsonFlatter.flat<T>(json).convert()
+        }
+    }
 
-    inline fun <reified T> put(
+    suspend inline fun <reified T> put(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
-    ): CommonFlow<DataState<T>> = flow {
-        executeCatching<T>({
-            emit(DataState.loading())
-            val builder = StrapiRequestBuilder()
-            builder.requestBuilder()
-            val json = httpClient.put<JsonElement>(buildRequest(builder, HttpMethod.Put.value))
-            if (T::class.simpleName == Unit::class.simpleName) {
-                emit(DataState.data(data = Unit as T))
-            } else {
-                val data = JsonFlatter.flat<T>(json).convert<T>()
-                emit(DataState.data(data = data))
-            }
-        }, this)
-    }.asCommonFlow()
+    ): T {
+        val builder = StrapiRequestBuilder()
+        builder.requestBuilder()
+        val json =
+            httpClient.put(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+        return if (T::class.simpleName == Unit::class.simpleName) {
+            Unit as T
+        } else {
+            JsonFlatter.flat<T>(json).convert()
+        }
+    }
 
-
-    inline fun <reified T> delete(
+    suspend inline fun <reified T> delete(
         crossinline requestBuilder: StrapiRequestBuilder.() -> Unit = {},
-    ): CommonFlow<DataState<T>> = flow {
-        executeCatching<T>({
-            emit(DataState.loading())
-            val builder = StrapiRequestBuilder()
-            builder.requestBuilder()
-            val json = httpClient.delete<JsonElement>(buildRequest(builder, HttpMethod.Delete.value))
-            if (T::class.simpleName == Unit::class.simpleName) {
-                emit(DataState.data(data = Unit as T))
-            } else {
-                val data = JsonFlatter.flat<T>(json).convert<T>()
-                emit(DataState.data(data = data))
-            }
-        }, this)
-    }.asCommonFlow()
+    ): T {
+        val builder = StrapiRequestBuilder()
+        builder.requestBuilder()
+        val json =
+            httpClient.delete(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+        return if (T::class.simpleName == Unit::class.simpleName) {
+            Unit as T
+        } else {
+            JsonFlatter.flat<T>(json).convert()
+        }
+    }
 }
 
 val jsonWithIgnoredUnknownKeys = Json {

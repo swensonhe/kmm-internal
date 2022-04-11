@@ -31,7 +31,7 @@ open class KmmBaseService(private val baseUrl: String, private val kmmPreference
                 } catch (throwable: Throwable) {
                     "unable to obtain body data"
                 }
-                this.body = body.first().value!!
+                this.setBody(body.first().value!!)
             }
         }
 
