@@ -10,6 +10,8 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.ios.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -24,7 +26,9 @@ actual class KtorClientFactory actual constructor(context: Any) {
         }
 
         return HttpClient(Ios) {
-
+            install(ContentNegotiation) {
+                json()
+            }
             install(DefaultRequest) {
                 val token = preference.getString(SharedConstants.ACCESS_TOKEN)
                 if (token.isNullOrEmpty().not()) {

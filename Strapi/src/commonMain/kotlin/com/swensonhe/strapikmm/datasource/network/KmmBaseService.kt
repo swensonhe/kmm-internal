@@ -2,7 +2,6 @@ package com.swensonhe.strapikmm.datasource.network
 
 import com.swensonhe.strapikmm.sharedpreference.KmmPreference
 import io.ktor.client.request.*
-import io.ktor.http.*
 
 open class KmmBaseService(private val baseUrl: String, private val kmmPreference: KmmPreference) {
     fun buildRequest(
@@ -21,8 +20,6 @@ open class KmmBaseService(private val baseUrl: String, private val kmmPreference
             queries.forEach { param ->
                 parameter(param.key, param.value)
             }
-
-            accept(ContentType.Application.Json)
 
             headers.forEach {
                 header(it.key, it.value)

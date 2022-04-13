@@ -19,7 +19,7 @@ val publishEmail: String = gradleLocalProperties(rootDir).getProperty("publishEm
 val publishRepository: String = gradleLocalProperties(rootDir).getProperty("publishRepository")
 val publishDeveloper: String = gradleLocalProperties(rootDir).getProperty("publishDeveloper")
 
-val currentVersion = "2.0.3"
+val currentVersion = "2.0.4"
 val libName = "strapiKMM"
 
 version = currentVersion
@@ -60,7 +60,8 @@ kotlin {
             dependencies {
                 api(Ktor.core)
                 api(Ktor.clientSerialization)
-                api(Ktor.kotlinXSerialization)
+                api(Ktor.ktorKotlinSerialization)
+                api(Ktor.contentNegotiation)
                 api(Ktor.logback)
                 api(Ktor.logging)
 //                api(Kotlin.kotlinxCoroutines) {
