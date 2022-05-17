@@ -49,7 +49,7 @@ class StrapiService(
         val builder = StrapiRequestBuilder()
         builder.requestBuilder()
         val json =
-            httpClient.patch(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+            httpClient.patch(buildRequest(builder, HttpMethod.Patch.value)).body<JsonElement>()
         return if (T::class.simpleName == Unit::class.simpleName) {
             Unit as T
         } else {
@@ -63,7 +63,7 @@ class StrapiService(
         val builder = StrapiRequestBuilder()
         builder.requestBuilder()
         val json =
-            httpClient.put(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+            httpClient.put(buildRequest(builder, HttpMethod.Put.value)).body<JsonElement>()
         return if (T::class.simpleName == Unit::class.simpleName) {
             Unit as T
         } else {
@@ -77,7 +77,7 @@ class StrapiService(
         val builder = StrapiRequestBuilder()
         builder.requestBuilder()
         val json =
-            httpClient.delete(buildRequest(builder, HttpMethod.Post.value)).body<JsonElement>()
+            httpClient.delete(buildRequest(builder, HttpMethod.Delete.value)).body<JsonElement>()
         return if (T::class.simpleName == Unit::class.simpleName) {
             Unit as T
         } else {

@@ -22,6 +22,7 @@ actual class KtorClientFactory actual constructor(context: Any) {
         val jsonSerializer = kotlinx.serialization.json.Json {
             ignoreUnknownKeys = true
             encodeDefaults = false
+            explicitNulls = false
             useAlternativeNames = false
         }
 
