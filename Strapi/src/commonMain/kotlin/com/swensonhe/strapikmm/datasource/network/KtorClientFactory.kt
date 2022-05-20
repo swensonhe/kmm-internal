@@ -6,7 +6,13 @@ import com.swensonhe.strapikmm.util.Logger
 import io.ktor.client.*
 import io.ktor.client.request.*
 
-expect class KtorClientFactory(context: Any) {
+enum class NetworkLogLevel {
+    NONE,
+    REQUEST,
+    ALL
+}
+
+expect class KtorClientFactory(context: Any, networkLogLevel: NetworkLogLevel) {
 
     fun build(): HttpClient
 }

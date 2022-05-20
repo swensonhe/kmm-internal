@@ -1,6 +1,7 @@
 package com.swensonhe.strapikmm.datasource.network
 
 import com.swensonhe.strapikmm.sharedpreference.KmmPreference
+import com.swensonhe.strapikmm.util.LoggerConfiguration
 import io.ktor.client.request.*
 
 open class KmmBaseService(private val baseUrl: String, private val kmmPreference: KmmPreference) {
@@ -35,7 +36,9 @@ open class KmmBaseService(private val baseUrl: String, private val kmmPreference
             }
         }
 
-        builder.printCURLDescription(bodyString, method, kmmPreference)
+        if (LoggerConfiguration.networkLogLevel != NetworkLogLevel.NONE) {
+            builder.printCURLDescription(bodyString, method, kmmPreference)
+        }
         return builder
     }
 }

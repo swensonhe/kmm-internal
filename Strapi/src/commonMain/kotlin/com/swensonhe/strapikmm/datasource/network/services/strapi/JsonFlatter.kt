@@ -1,6 +1,8 @@
 package com.swensonhe.strapikmm.datasource.network.services.strapi
 
+import com.swensonhe.strapikmm.datasource.network.NetworkLogLevel
 import com.swensonhe.strapikmm.util.Logger
+import com.swensonhe.strapikmm.util.LoggerConfiguration
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.elementNames
@@ -11,7 +13,10 @@ import kotlin.reflect.typeOf
 object JsonFlatter {
 
     inline fun <reified T> flat(jsonElement: JsonElement): JsonElement {
-        Logger("").log(jsonElement.toString())
+        if (LoggerConfiguration.networkLogLevel == NetworkLogLevel.ALL) {
+            Logger("").log(jsonElement.toString())
+        }
+
         val descriptor = serializer(typeOf<T>()).descriptor
         val elementNames = descriptor.elementNames
 
