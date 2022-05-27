@@ -12,7 +12,10 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.ios.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -33,8 +36,14 @@ actual class KtorClientFactory actual constructor(context: Any, val networkLogLe
 
         return HttpClient(Ios) {
             install(ContentNegotiation) {
-                json()
+                val converter = KotlinxSerializationConverter(Json {
+                    prettyPrint = true
+                    ignoreUnknownKeys = true
+                    explicitNulls = false
+                })
+                register(ContentType.Application.Json, converter)
             }
+
             install(DefaultRequest) {
                 val token = preference.getString(SharedConstants.ACCESS_TOKEN)
                 if (token.isNullOrEmpty().not()) {

@@ -13,7 +13,10 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -25,17 +28,21 @@ actual class KtorClientFactory actual constructor(context: Any, networkLogLevel:
     }
 
     actual fun build(): HttpClient {
-        val jsonSerializer = kotlinx.serialization.json.Json {
+        val jsonSerializer = Json {
             ignoreUnknownKeys = true
-            encodeDefaults = false
-            explicitNulls = false
+            encodeDefaults = true
             useAlternativeNames = false
         }
 
         return HttpClient(Android) {
 
             install(ContentNegotiation) {
-                json()
+                val converter = KotlinxSerializationConverter(Json {
+                    prettyPrint = true
+                    ignoreUnknownKeys = true
+                    explicitNulls = false
+                })
+                register(ContentType.Application.Json, converter)
             }
 
             install(DefaultRequest) {
