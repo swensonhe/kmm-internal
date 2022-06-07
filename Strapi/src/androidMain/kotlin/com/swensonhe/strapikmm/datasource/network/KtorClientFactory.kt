@@ -7,7 +7,7 @@ import com.swensonhe.strapikmm.datasource.network.services.strapi.JsonFlatter
 import com.swensonhe.strapikmm.errorhandling.NetworkError
 import com.swensonhe.strapikmm.errorhandling.NetworkErrorMapper
 import com.swensonhe.strapikmm.sharedpreference.KmmPreference
-import com.swensonhe.strapikmm.util.LoggerConfiguration
+import com.swensonhe.strapikmm.util.strapiNetworkLogLevel
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
@@ -24,7 +24,7 @@ actual class KtorClientFactory actual constructor(context: Any, networkLogLevel:
     private val preference = KmmPreference(KVault(context as Context))
 
     init {
-        LoggerConfiguration.networkLogLevel = networkLogLevel
+        strapiNetworkLogLevel = networkLogLevel
     }
 
     actual fun build(): HttpClient {
@@ -37,13 +37,14 @@ actual class KtorClientFactory actual constructor(context: Any, networkLogLevel:
         return HttpClient(Android) {
 
             install(ContentNegotiation) {
-                val converter = KotlinxSerializationConverter(Json {
-                    prettyPrint = true
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                })
-                register(ContentType.Application.Json, converter)
+                json()
             }
+
+//            install(HttpTimeout) {
+//                this.connectTimeoutMillis = 2 * 60 * 1000 // 2 mins
+//                this.requestTimeoutMillis = 2 * 60 * 1000 // 2 mins
+//                this.socketTimeoutMillis = 2 * 60 * 1000 // 2 mins
+//            }
 
             install(DefaultRequest) {
                 val token = preference.getString(SharedConstants.ACCESS_TOKEN)

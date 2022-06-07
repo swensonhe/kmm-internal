@@ -1,12 +1,8 @@
 package com.swensonhe.strapikmm.util
 
 import com.swensonhe.strapikmm.datasource.network.NetworkLogLevel
-import kotlin.native.concurrent.ThreadLocal
 
-@ThreadLocal
-object LoggerConfiguration {
-    var networkLogLevel =  NetworkLogLevel.ALL
-}
+var strapiNetworkLogLevel =  NetworkLogLevel.NONE
 
 expect class Logger(
     className: String,

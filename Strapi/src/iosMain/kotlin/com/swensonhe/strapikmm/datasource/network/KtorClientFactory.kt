@@ -6,16 +6,13 @@ import com.swensonhe.strapikmm.datasource.network.services.strapi.JsonFlatter
 import com.swensonhe.strapikmm.errorhandling.NetworkError
 import com.swensonhe.strapikmm.errorhandling.NetworkErrorMapper
 import com.swensonhe.strapikmm.sharedpreference.KmmPreference
-import com.swensonhe.strapikmm.util.LoggerConfiguration
+import com.swensonhe.strapikmm.util.strapiNetworkLogLevel
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.ios.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 
@@ -23,7 +20,7 @@ actual class KtorClientFactory actual constructor(context: Any, val networkLogLe
     private val preference = KmmPreference(KVault())
 
     init {
-        LoggerConfiguration.networkLogLevel = networkLogLevel
+        strapiNetworkLogLevel = networkLogLevel
     }
 
     actual fun build(): HttpClient {
@@ -36,13 +33,14 @@ actual class KtorClientFactory actual constructor(context: Any, val networkLogLe
 
         return HttpClient(Ios) {
             install(ContentNegotiation) {
-                val converter = KotlinxSerializationConverter(Json {
-                    prettyPrint = true
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                })
-                register(ContentType.Application.Json, converter)
+                json()
             }
+
+//            install(HttpTimeout) {
+//                this.connectTimeoutMillis = 2 * 60 * 1000 // 2 mins
+//                this.requestTimeoutMillis = 2 * 60 * 1000 // 2 mins
+//                this.socketTimeoutMillis = 2 * 60 * 1000 // 2 mins
+//            }
 
             install(DefaultRequest) {
                 val token = preference.getString(SharedConstants.ACCESS_TOKEN)
