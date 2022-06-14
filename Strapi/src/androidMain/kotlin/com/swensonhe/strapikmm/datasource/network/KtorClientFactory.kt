@@ -13,8 +13,7 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.*
+import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -35,16 +34,10 @@ actual class KtorClientFactory actual constructor(context: Any, networkLogLevel:
         }
 
         return HttpClient(Android) {
-
+            expectSuccess = true
             install(ContentNegotiation) {
                 json()
             }
-
-//            install(HttpTimeout) {
-//                this.connectTimeoutMillis = 2 * 60 * 1000 // 2 mins
-//                this.requestTimeoutMillis = 2 * 60 * 1000 // 2 mins
-//                this.socketTimeoutMillis = 2 * 60 * 1000 // 2 mins
-//            }
 
             install(DefaultRequest) {
                 val token = preference.getString(SharedConstants.ACCESS_TOKEN)
@@ -57,9 +50,24 @@ actual class KtorClientFactory actual constructor(context: Any, networkLogLevel:
             }
 
             HttpResponseValidator {
-                handleResponseException { cause ->
+
+                validateResponse { response: HttpResponse ->
+                    val statusCode = response.status.value
+                    when (statusCode) {
+                        in 300..399 -> throw RedirectResponseException(response, response.bodyAsText())
+                        in 400..499 -> throw ClientRequestException(response, response.bodyAsText())
+                        in 500..599 -> throw ServerResponseException(response, response.bodyAsText())
+                    }
+
+                    if (statusCode >= 600) {
+                        throw ResponseException(response, response.bodyAsText())
+                    }
+                }
+
+
+                handleResponseExceptionWithRequest { cause, _ ->
                     val responseException =
-                        cause as? ResponseException ?: return@handleResponseException
+                        cause as? ResponseException ?: return@handleResponseExceptionWithRequest
                     val response = responseException.response
                     val bytes = response.body<JsonElement>()
                     val errorData =
